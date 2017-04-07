@@ -91,6 +91,39 @@ public class LoggedWindow extends JFrame
                 uploadFile();
             }
         });
+        deleteButton.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                FTPFile clickedFile = currentFiles[table.getSelectedRow()];
+
+                if (clickedFile.isDir())
+                {
+                    deleteDirectory(clickedFile.getName());
+                }
+                else
+                {
+                    deleteFile(clickedFile.getName());
+                }
+            }
+        });
+        buttonNewFolder.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                createDirectory();
+            }
+        });
+        buttonRename.addActionListener(new ActionListener()
+        {
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+
+            }
+        });
     }
     public void listDirectories ()
     {
@@ -195,5 +228,61 @@ public class LoggedWindow extends JFrame
             }
             listDirectories();
         }
+    }
+    public void deleteFile(String name)
+    {
+        try
+        {
+            client.deleteFile(name);
+        }
+        catch (IOException exc)
+        {
+            JOptionPane.showMessageDialog(this, exc.getMessage());
+        }
+        listDirectories();
+    }
+    public void deleteDirectory(String name)
+    {
+        try
+        {
+            client.deleteDirectory(name);
+        }
+        catch (IOException exc)
+        {
+            JOptionPane.showMessageDialog(this, exc.getMessage());
+        }
+        listDirectories();
+    }
+    public void createDirectory()
+    {
+        try
+        {
+            String name = JOptionPane.showInputDialog("Folder name");
+            if (!name.isEmpty())
+            {
+                client.createDirectory(name);
+            }
+        }
+        catch (IOException exc)
+        {
+            JOptionPane.showMessageDialog(this, exc.getMessage());
+        }
+        listDirectories();
+    }
+    public void rename(String name)
+    {
+        try
+        {
+            String newName = JOptionPane.showInputDialog("Rename to");
+            if (!name.isEmpty())
+            {
+                client.renameDirectory(name, newName);
+            }
+        }
+        catch (IOException exc)
+        {
+            JOptionPane.showMessageDialog(this, exc.getMessage());
+        }
+        listDirectories();
     }
 }
