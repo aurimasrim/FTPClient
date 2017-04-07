@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="LoggedWindow">
+  <grid id="27dc6" binding="mainPanel" layout-manager="BorderLayout" hgap="0" vgap="0">
+    <constraints>
+      <xy x="20" y="20" width="500" height="400"/>
+    </constraints>
+    <properties/>
+    <border type="none"/>
+    <children>
+      <grid id="c926a" binding="buttonsPanel" layout-manager="FlowLayout" hgap="5" vgap="5" flow-align="1">
+        <constraints border-constraint="South"/>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="8cdc3" class="javax.swing.JButton" binding="buttonUp">
+            <constraints/>
+            <properties>
+              <text value="Up"/>
+            </properties>
+          </component>
+          <component id="c54ba" class="javax.swing.JButton" binding="buttonUpload">
+            <constraints/>
+            <properties>
+              <text value="Upload"/>
+            </properties>
+          </component>
+          <component id="2ef09" class="javax.swing.JButton" binding="buttonNewFolder">
+            <constraints/>
+            <properties>
+              <text value="New folder"/>
+            </properties>
+          </component>
+          <component id="5463a" class="javax.swing.JButton" binding="deleteButton" default-binding="true">
+            <constraints/>
+            <properties>
+              <text value="Delete"/>
+            </properties>
+          </component>
+          <component id="8280f" class="javax.swing.JButton" binding="buttonRename">
+            <constraints/>
+            <properties>
+              <text value="Rename"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <component id="14720" class="javax.swing.JTable" binding="table">
+        <constraints border-constraint="Center"/>
+        <properties>
+          <editingColumn value="0"/>
+          <editingRow value="0"/>
+        </properties>
+        <clientProperties>
+          <Table.isFileList class="java.lang.Boolean" value="false"/>
+        </clientProperties>
+      </component>
+    </children>
+  </grid>
+</form>
