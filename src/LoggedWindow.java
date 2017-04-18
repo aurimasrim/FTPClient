@@ -1,5 +1,6 @@
 import FTPLibrary.FTPClient;
 import FTPLibrary.FTPFile;
+import jdk.nashorn.internal.scripts.JO;
 
 import javax.naming.NoPermissionException;
 import javax.swing.*;
@@ -10,6 +11,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketException;
 
 /**
  * Created by aurim on 2017-04-02.
@@ -43,7 +45,7 @@ public class LoggedWindow extends JFrame
         setContentPane(mainPanel);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        setSize(400, 400);
+        setSize(450, 400);
         this.add(new JScrollPane(table));
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -63,7 +65,6 @@ public class LoggedWindow extends JFrame
                 if (e.getClickCount() == 2)
                 {
                     FTPFile clickedFile = currentFiles[table.getSelectedRow()];
-
                     if (clickedFile.isDir())
                     {
                         changeDirectory(clickedFile.getName());
@@ -96,15 +97,22 @@ public class LoggedWindow extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)
             {
-                FTPFile clickedFile = currentFiles[table.getSelectedRow()];
+                try
+                {
+                    FTPFile clickedFile = currentFiles[table.getSelectedRow()];
 
-                if (clickedFile.isDir())
-                {
-                    deleteDirectory(clickedFile.getName());
+                    if (clickedFile.isDir())
+                    {
+                        deleteDirectory(clickedFile.getName());
+                    }
+                    else
+                    {
+                        deleteFile(clickedFile.getName());
+                    }
                 }
-                else
+                catch (ArrayIndexOutOfBoundsException exc)
                 {
-                    deleteFile(clickedFile.getName());
+                    JOptionPane.showMessageDialog(null, "File or directory not selected");
                 }
             }
         });
@@ -121,7 +129,15 @@ public class LoggedWindow extends JFrame
             @Override
             public void actionPerformed(ActionEvent e)
             {
-
+                try
+                {
+                    FTPFile clickedFile = currentFiles[table.getSelectedRow()];
+                    rename(clickedFile.getName());
+                }
+                catch (ArrayIndexOutOfBoundsException exc)
+                {
+                    JOptionPane.showMessageDialog(null, "File or directory not selected");
+                }
             }
         });
     }
@@ -150,6 +166,11 @@ public class LoggedWindow extends JFrame
         {
             client.changeCurrentDirectory(directory);
         }
+        catch (SocketException exc)
+        {
+            JOptionPane.showMessageDialog(null, exc.getMessage());
+            System.exit(1);
+        }
         catch (IOException exc)
         {
             JOptionPane.showMessageDialog(null, exc.getMessage());
@@ -162,6 +183,11 @@ public class LoggedWindow extends JFrame
         {
             client.changeDirectoryUp();
         }
+        catch (SocketException exc)
+        {
+            JOptionPane.showMessageDialog(null, exc.getMessage());
+            System.exit(1);
+        }
         catch (IOException exc)
         {
             JOptionPane.showMessageDialog(null, exc.getMessage());
@@ -170,6 +196,7 @@ public class LoggedWindow extends JFrame
     }
     public void updateTable(FTPFile[] array)
     {
+        // išvalo
         model.setRowCount(0);
         for(FTPFile file : array)
         {
@@ -181,6 +208,7 @@ public class LoggedWindow extends JFrame
             //System.out.println(file.getPermissions());
         }
     }
+    // create empty file and download from server
     public void getFile(String name)
     {
         JFileChooser chooser = new JFileChooser();
@@ -200,6 +228,11 @@ public class LoggedWindow extends JFrame
                 file.createNewFile();
                 client.downloadFile(file);
             }
+            catch (SocketException exc)
+            {
+                JOptionPane.showMessageDialog(null, exc.getMessage());
+                System.exit(1);
+            }
             catch(IOException exc)
             {
                 JOptionPane.showMessageDialog(null, exc.getMessage());
@@ -218,6 +251,11 @@ public class LoggedWindow extends JFrame
             {
                 client.uploadFile(chooser.getSelectedFile());
             }
+            catch (SocketException exc)
+            {
+                JOptionPane.showMessageDialog(null, exc.getMessage());
+                System.exit(1);
+            }
             catch(IOException exc)
             {
                 JOptionPane.showMessageDialog(this, exc.getMessage());
@@ -235,6 +273,11 @@ public class LoggedWindow extends JFrame
         {
             client.deleteFile(name);
         }
+        catch (SocketException exc)
+        {
+            JOptionPane.showMessageDialog(null, exc.getMessage());
+            System.exit(1);
+        }
         catch (IOException exc)
         {
             JOptionPane.showMessageDialog(this, exc.getMessage());
@@ -246,6 +289,11 @@ public class LoggedWindow extends JFrame
         try
         {
             client.deleteDirectory(name);
+        }
+        catch (SocketException exc)
+        {
+            JOptionPane.showMessageDialog(null, exc.getMessage());
+            System.exit(1);
         }
         catch (IOException exc)
         {
@@ -262,27 +310,41 @@ public class LoggedWindow extends JFrame
             {
                 client.createDirectory(name);
             }
+            listDirectories();
+        }
+        catch (SocketException exc)
+        {
+            JOptionPane.showMessageDialog(null, exc.getMessage());
+            System.exit(1);
         }
         catch (IOException exc)
         {
             JOptionPane.showMessageDialog(this, exc.getMessage());
         }
-        listDirectories();
+        catch (NullPointerException exc) {}
+
     }
     public void rename(String name)
     {
         try
         {
             String newName = JOptionPane.showInputDialog("Rename to");
-            if (!name.isEmpty())
+            if (!newName.isEmpty())
             {
                 client.renameDirectory(name, newName);
+                listDirectories();
             }
+        }
+        catch (NullPointerException exc) {}
+        catch (SocketException exc)
+        {
+            JOptionPane.showMessageDialog(null, exc.getMessage());
+            System.exit(1);
         }
         catch (IOException exc)
         {
             JOptionPane.showMessageDialog(this, exc.getMessage());
         }
-        listDirectories();
+
     }
 }

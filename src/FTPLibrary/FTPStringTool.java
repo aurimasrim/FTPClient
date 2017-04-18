@@ -67,7 +67,7 @@ public class FTPStringTool
             }
         }
         FTPFile file = new FTPFile(name, size, modifyDate, isDir, permissions);
-        System.out.println(file.getName());
+        //System.out.println(file.getName());
         return file;
     }
 }
